@@ -3,7 +3,7 @@ from flask_restful import Resource, Api, reqparse, marshal_with, fields
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow import Schema, fields, validate
-from flask_restx import Namespace
+from flask_restx import Namespace, Api
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user, login_manager,LoginManager, UserMixin
 from flask_httpauth import HTTPBasicAuth
@@ -29,7 +29,27 @@ app.config['JWT_SECRET_KEY'] = 'secret-key'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 auth = HTTPBasicAuth()
-api = Api(app)
+authorizations = {
+    'Bearer Auth': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        "description": "Add a JWT token to the header with ** Bearer &lt;JWT&gt; ** token to authorize user "
+    }
+}
+api = Api(
+    app,
+    title='Student Management API',
+    description='A student management API for managing student records with provided access to admin and students.\n'
+    'The API is built with Python, Flask and Flask-RESTX and is still under development.\n'
+    'Follow the steps below to use the API:\n'
+    '1. Create a user account\n'
+    '2. Login to generate a JWT token\n'
+    '3. Add the token to the Authorization header with the Bearer prefix eg "Bearer JWT-token"\n'
+    '4. Use the token to access the endpoints',
+    authorizations=authorizations,
+    security="Bearer Auth"
+)
 
 # jwt = JWTManager(app)
 
